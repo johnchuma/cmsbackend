@@ -8,10 +8,12 @@ const {
   getUserInfo,
   updateUser,
   deleteUser,
+  loginWithGoogle,
 } = require("./users.controllers");
 const router = Router();
 
 router.post("/", addUser);
+router.post("/register-with-google", loginWithGoogle);
 router.post("/login", login);
 router.get("/", validateJWT, getUsers);
 router.get("/me", validateJWT, getMyInfo);

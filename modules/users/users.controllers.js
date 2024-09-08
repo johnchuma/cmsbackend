@@ -20,7 +20,7 @@ const findUserByUUID = async (uuid) => {
 
 const addUser = async (req, res) => {
   try {
-    let { role, phone, name, email, password } = req.body;
+    let { role, phone, name, email, password, googleLogin } = req.body;
     let user;
     console.log(role, phone, name, email);
     user = await User.findOne({
@@ -43,6 +43,31 @@ const addUser = async (req, res) => {
         role,
       });
       const tokens = generateJwtTokens(response);
+      successResponse(res, { tokens: tokens });
+    }
+  } catch (error) {
+    console.log(error);
+    errorResponse(res, error);
+  }
+};
+
+const loginWithGoogle = async (req, res) => {
+  try {
+    const { email, name } = req.body;
+    let user = await User.findOne({
+      where: {
+        email,
+      },
+    });
+    if (user) {
+      const tokens = generateJwtTokens(user);
+      successResponse(res, { tokens: tokens });
+    } else {
+      user = await User.create({
+        email,
+        name,
+      });
+      const tokens = generateJwtTokens(user);
       successResponse(res, { tokens: tokens });
     }
   } catch (error) {
@@ -141,6 +166,7 @@ module.exports = {
   findUserByUUID,
   getUsers,
   login,
+  loginWithGoogle,
   deleteUser,
   getUserInfo,
   getMyInfo,
