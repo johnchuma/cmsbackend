@@ -1,21 +1,21 @@
 {
   "development": {
-    "username": "root",
-    "password": "",
+    "username": "john",
+    "password": "@NeemaFeruzi56664466",
     "database": "cms",
-    "host": "localhost",
+    "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "test": {
-    "username": "root",
-    "password": null,
+    "username": "john",
+    "password": "@NeemaFeruzi56664466",
     "database": "cms",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
+    "username": "john",
+    "password": "@NeemaFeruzi56664466",
     "database": "cms",
     "host": "127.0.0.1",
     "dialect": "mysql"
