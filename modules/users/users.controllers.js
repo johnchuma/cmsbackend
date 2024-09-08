@@ -53,7 +53,7 @@ const addUser = async (req, res) => {
 
 const loginWithGoogle = async (req, res) => {
   try {
-    const { email, name } = req.body;
+    const { email, name, phone } = req.body;
     let user = await User.findOne({
       where: {
         email,
@@ -66,6 +66,7 @@ const loginWithGoogle = async (req, res) => {
       user = await User.create({
         email,
         name,
+        phone,
       });
       const tokens = generateJwtTokens(user);
       successResponse(res, { tokens: tokens });
