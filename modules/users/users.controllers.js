@@ -21,6 +21,7 @@ const addUser = async (req, res) => {
   try {
     let { role, phone, name, email, password } = req.body;
     let user;
+    console.log(role, phone, name, email);
     user = await User.findOne({
       where: {
         email,
