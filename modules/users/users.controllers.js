@@ -59,6 +59,7 @@ const loginWithGoogle = async (req, res) => {
         email,
       },
     });
+    console.log("user found", user);
     if (user) {
       const tokens = generateJwtTokens(user);
       successResponse(res, { tokens: tokens });
