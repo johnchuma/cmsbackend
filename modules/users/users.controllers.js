@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { User } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { errorResponse, successResponse } = require("../../utils/responses");
+const bcrypt = require("bcrypt");
 
 const findUserByUUID = async (uuid) => {
   try {
