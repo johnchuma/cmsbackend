@@ -20,7 +20,7 @@ const findUserByUUID = async (uuid) => {
 
 const addUser = async (req, res) => {
   try {
-    let { role, phone, name, email, password, googleLogin } = req.body;
+    let { role, phone, name, email, password } = req.body;
     let user;
     console.log(role, phone, name, email);
     user = await User.findOne({
@@ -89,9 +89,11 @@ const login = async (req, res) => {
       const result = await bcrypt.compare(password, user.password);
       console.log(result);
       if (result) {
-        const token = generateJwtTokens(user);
+        const tokens = generateJwtTokens(user);
         res.status(200).json({
-          token,
+          body: {
+            tokens,
+          },
           status: true,
         });
       } else {
