@@ -1,11 +1,10 @@
-const { errorResponse, successResponse } = require("../utils/responses");
 const { sendMail } = require("../utils/mail_controller");
 
-const sendEmail = async (res, user, status) => {
+const sendEmail = async (user, status) => {
   try {
-    var subject = "",
-      message = "";
-    var response;
+    let subject = "";
+    let message = "";
+    let response;
     switch (status) {
       case "recovery-code":
         subject = "CMS password recovery code";
@@ -19,10 +18,9 @@ const sendEmail = async (res, user, status) => {
       default:
         break;
     }
-    // successResponse(res, response);
+    return response;
   } catch (error) {
     return error;
-    errorResponse(res, error);
   }
 };
 

@@ -149,7 +149,7 @@ const sendRecoveryCode = async (req, res) => {
       user = await user.update({
         recoveryCode: code,
       });
-      const response = await sendEmail(res, user, "recovery-code");
+      const response = await sendEmail(user, "recovery-code");
       successResponse(res, response);
     } else {
       res.status(404).send({ status: false, message: "User does not exist" });
