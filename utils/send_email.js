@@ -11,7 +11,7 @@ const sendEmail = async (user, status) => {
         message =
           "Hi! " +
           user.name +
-          ",<br>Your password recovery code is" +
+          ",<br>Your password recovery code is " +
           user.recoveryCode;
         response = await sendMail(user, subject, message, status);
         break;
