@@ -36,4 +36,4 @@ const sendMail = (user, subject, message, status) => {
     console.log(error);
   }
 };
-module.exports = { sendMail, resetPassword };
+module.exports = { sendMail };

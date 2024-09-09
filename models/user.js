@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      recoveryCode: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       role: {
         type: DataTypes.ENUM("admin", "owner", "member"),
         defaultValue: "owner",

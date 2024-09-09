@@ -33,6 +33,10 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      recoveryCode: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       password: {
         type: DataTypes.STRING,
         allowNull: true,

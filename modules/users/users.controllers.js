@@ -3,6 +3,9 @@ const { User } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { errorResponse, successResponse } = require("../../utils/responses");
 const bcrypt = require("bcrypt");
+const { randomNumber } = require("../../utils/random_number");
+const { sendMail } = require("../../utils/mail_controller");
+const { sendEmail } = require("../../utils/send_email");
 
 const findUserByUUID = async (uuid) => {
   try {
@@ -133,6 +136,28 @@ const getUserInfo = async (req, res) => {
     errorResponse(res, error);
   }
 };
+const sendRecoveryCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+    let user = await User.findOne({
+      where: {
+        email,
+      },
+    });
+    if (user) {
+      const code = randomNumber();
+      user = await user.update({
+        recoveryCode: code,
+      });
+      const response = await sendEmail(res, user, "recovery-code");
+      successResponse(res, response);
+    } else {
+      res.status(404).send({ status: false, message: "User does not exist" });
+    }
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
 
 const getMyInfo = async (req, res) => {
   try {
@@ -149,6 +174,29 @@ const deleteUser = async (req, res) => {
     const user = await findUserByUUID(uuid);
     const response = await user.destroy();
     successResponse(res, response);
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+const resetPassword = async (req, res) => {
+  try {
+    let { recoveryCode, password } = req.body;
+    const { email } = req.params;
+    let user = await User.findOne({
+      where: {
+        email,
+      },
+    });
+    if (user.recoveryCode == recoveryCode) {
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      user = await user.update({ password: hashedPassword });
+      successResponse(res, user);
+    } else {
+      res.status(401).send({
+        status: false,
+        message: "Invalid recovery code",
+      });
+    }
   } catch (error) {
     errorResponse(res, error);
   }
@@ -175,4 +223,6 @@ module.exports = {
   getUserInfo,
   getMyInfo,
   updateUser,
+  sendRecoveryCode,
+  resetPassword,
 };
