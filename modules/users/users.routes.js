@@ -18,7 +18,7 @@ router.post("/", addUser);
 router.post("/login-with-google", loginWithGoogle);
 router.post("/login", login);
 router.post("/send-recovery-code", sendRecoveryCode);
-router.post("/reset-password/:uuid", resetPassword);
+router.post("/reset-password/:email", resetPassword);
 router.post("/login", login);
 router.get("/", validateJWT, getUsers);
 router.get("/me", validateJWT, getMyInfo);
