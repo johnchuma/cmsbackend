@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Church } = require("../../models");
+const { Church, Product } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
@@ -22,7 +22,7 @@ const addChurch = async (req, res) => {
   try {
     const { name, address, description } = req.body;
     let user = req.user;
-    const response = await Product.create({
+    const response = await Church.create({
       name,
       address,
       description,
