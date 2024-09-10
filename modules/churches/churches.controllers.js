@@ -20,8 +20,8 @@ const findChurchByUUID = async (uuid) => {
 
 const addChurch = async (req, res) => {
   try {
-    const { name, address, description, user_uuid } = req.body;
-    const user = await findUserByUUID(user_uuid);
+    const { name, address, description } = req.body;
+    let user = req.user;
     const response = await Product.create({
       name,
       address,
