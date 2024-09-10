@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Church } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
+const { errorResponse, successResponse } = require("../../utils/responses");
 
 const findChurchByUUID = async (uuid) => {
   try {
@@ -45,6 +46,20 @@ const getChurches = async (req, res) => {
     errorResponse(res, error);
   }
 };
+
+const getUserChurches = async (req, res) => {
+  try {
+    const user = req.user;
+    const church = await Church.findAll({
+      where: {
+        userId: user.id,
+      },
+    });
+    successResponse(res, church);
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
 const getChurch = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -81,6 +96,7 @@ module.exports = {
   addChurch,
   findChurchByUUID,
   getChurches,
+  getUserChurches,
   getChurch,
   deleteChurch,
   updateChurch,
