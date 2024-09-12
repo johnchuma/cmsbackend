@@ -81,7 +81,7 @@ const addMember = async (req, res) => {
 
 const getChurchMembers = async (req, res) => {
   try {
-    const uuid = req.params;
+    const { uuid } = req.params;
     const church = await findChurchByUUID(uuid);
     const response = await Member.findAll({
       where: {
