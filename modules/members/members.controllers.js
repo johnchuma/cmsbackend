@@ -79,9 +79,14 @@ const addMember = async (req, res) => {
   }
 };
 
-const getMembers = async (req, res) => {
+const getChurchMembers = async (req, res) => {
   try {
+    const uuid = req.params();
+    const church = await findChurchByUUID(uuid);
     const response = await Member.findAll({
+      where: {
+        churchId: church.id,
+      },
       attributes: {
         exclude: ["id"],
       },
@@ -91,6 +96,7 @@ const getMembers = async (req, res) => {
     errorResponse(res, error);
   }
 };
+
 const getMember = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -126,7 +132,7 @@ const updateMember = async (req, res) => {
 module.exports = {
   addMember,
   findMemberByUUID,
-  getMembers,
+  getChurchMembers,
   getMember,
   deleteMember,
   updateMember,
