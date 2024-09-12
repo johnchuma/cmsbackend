@@ -4,6 +4,7 @@ const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const bcrypt = require("bcrypt");
 const { findChurchByUUID } = require("../churches/churches.controllers");
+const { errorResponse, successResponse } = require("../../utils/responses");
 
 const findMemberByUUID = async (uuid) => {
   try {
@@ -21,7 +22,6 @@ const findMemberByUUID = async (uuid) => {
 
 const addMember = async (req, res) => {
   try {
-    
     const {
       name,
       address,

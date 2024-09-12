@@ -8,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      
       // define association here
     }
   }
@@ -18,14 +17,18 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      churchId: {
+        type: DataTypes.INTEGER,
+        defaultValue: false,
+      },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-      },
-      userId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
       },
       birthDate: {
         type: DataTypes.DATE,
@@ -35,18 +38,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      churchId: {
-        type: DataTypes.INTEGER,
-        defaultValue: false,
-      },
       disability: {
         type: DataTypes.STRING,
         allowNull: true,
       },
       email: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: true,
       },
       gender: {
         type: DataTypes.ENUM("Male", "Female"),
