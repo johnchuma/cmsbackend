@@ -27,11 +27,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       from: {
         type: DataTypes.DATE,
-        defaultValue: false,
+        allowNull: false,
       },
       to: {
         type: DataTypes.DATE,
-        defaultValue: false,
+        allowNull: false,
       },
       isActive: {
         type: DataTypes.BOOLEAN,
