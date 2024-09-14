@@ -3,14 +3,14 @@
     "username": "john",
     "password": "@NeemaFeruzi56664466",
     "database": "cms",
-    "host": "127.0.0.1",
+    "host": "167.88.168.165",
     "dialect": "mysql"
   },
   "test": {
     "username": "john",
     "password": "@NeemaFeruzi56664466",
     "database": "cms",
-    "host": "127.0.0.1",
+    "host": "167.88.168.165",
     "dialect": "mysql"
   },
   "production": {
