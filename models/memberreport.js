@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      MemberReport.belongsTo(models.Member);
       // define association here
     }
   }
@@ -31,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       isActive: {
         type: DataTypes.BOOLEAN,
-        allowNull: true,
+        defaultValue: true,
       },
     },
     {

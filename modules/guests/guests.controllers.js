@@ -1,31 +1,32 @@
 const { Op } = require("sequelize");
-const { Group, Product } = require("../../models");
+const { Guest, Product } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
-const { findChurchByUUID } = require("../churches/churches.controllers");
+const { findServiceByUUID } = require("../services/services.controllers");
 
-const findGroupByUUID = async (uuid) => {
+const findGuestByUUID = async (uuid) => {
   try {
-    const group = await Group.findOne({
+    const guest = await Guest.findOne({
       where: {
         uuid,
       },
     });
-    return group;
+    return guest;
   } catch (error) {
     console.log(error);
     throw error;
   }
 };
 
-const addGroup = async (req, res) => {
+const addGuest = async (req, res) => {
   try {
-    const { name, church_uuid } = req.body;
-    const church = await findChurchByUUID(church_uuid);
-    const response = await Group.create({
+    const { name, description, service_uuid } = req.body;
+    const service = await findServiceByUUID(service_uuid);
+    const response = await Guest.create({
       name,
-      churchId: church.id,
+      description,
+      serviceId: service.id,
     });
     successResponse(res, response);
   } catch (error) {
@@ -33,16 +34,16 @@ const addGroup = async (req, res) => {
   }
 };
 
-const getChurchGroups = async (req, res) => {
+const getServiceGuests = async (req, res) => {
   try {
     const { uuid } = req.params;
-    const church = await findChurchByUUID(uuid);
-    const response = await Group.findAll({
+    const service = await findServiceByUUID(uuid);
+    const response = await Guest.findAll({
       attributes: {
         exclude: ["id"],
       },
       where: {
-        churchId: church.id,
+        serviceId: service.id,
       },
     });
     successResponse(res, response);
@@ -51,31 +52,31 @@ const getChurchGroups = async (req, res) => {
   }
 };
 
-const getGroup = async (req, res) => {
+const getGuest = async (req, res) => {
   try {
     const { uuid } = req.params;
-    const group = await findGroupByUUID(uuid);
-    successResponse(res, group);
+    const guest = await findGuestByUUID(uuid);
+    successResponse(res, guest);
   } catch (error) {
     errorResponse(res, error);
   }
 };
 
-const deleteGroup = async (req, res) => {
+const deleteGuest = async (req, res) => {
   try {
     const { uuid } = req.params;
-    const group = await findGroupByUUID(uuid);
-    const response = await group.destroy();
+    const guest = await findGuestByUUID(uuid);
+    const response = await guest.destroy();
     successResponse(res, response);
   } catch (error) {
     errorResponse(res, error);
   }
 };
-const updateGroup = async (req, res) => {
+const updateGuest = async (req, res) => {
   try {
     const { uuid } = req.params;
-    const group = await findGroupByUUID(uuid);
-    const response = await group.update({
+    const guest = await findGuestByUUID(uuid);
+    const response = await guest.update({
       ...req.body,
     });
     successResponse(res, response);
@@ -84,10 +85,10 @@ const updateGroup = async (req, res) => {
   }
 };
 module.exports = {
-  addGroup,
-  findGroupByUUID,
-  getChurchGroups,
-  getGroup,
-  deleteGroup,
-  updateGroup,
+  addGuest,
+  findGuestByUUID,
+  getServiceGuests,
+  getGuest,
+  deleteGuest,
+  updateGuest,
 };

@@ -10,7 +10,7 @@ const {
 } = require("./memberReports.controllers");
 
 const router = Router();
-
+  
 router.post("/", validateJWT, addMemberReport);
 router.get("/church/:uuid", validateJWT, getChurchMemberReports);
 router.get("/:uuid", validateJWT, getMemberReport);

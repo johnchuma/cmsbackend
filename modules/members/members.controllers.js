@@ -82,13 +82,78 @@ const addMember = async (req, res) => {
 const getChurchMembers = async (req, res) => {
   try {
     const { uuid } = req.params;
+    console.log(uuid);
     const church = await findChurchByUUID(uuid);
-    const response = await Member.findAll({
-      where: {
-        churchId: church.id,
-      },
-    });
-    successResponse(res, response);
+    const { group, keyword } = req.query;
+    let members;
+    // console.log(group);
+    // console.log(keyword);
+    if (group) {
+      let filter = {};
+      // console.log(group);
+      console.log("Filter", filter);
+      switch (group) {
+        case "Men":
+          filter.gender = "Male";
+          break;
+        case "Women":
+          filter.gender = "Female";
+          break;
+        case "Married":
+          filter.maritalStatus = "Married";
+          break;
+        case "Not Married":
+          filter.maritalStatus = "Not Married";
+          break;
+        case "Children":
+          const date = new Date();
+          filter.birthDate = {
+            [Op.gte]: date.setFullYear(date.getFullYear() - 16),
+          };
+          break;
+        default:
+          break;
+      }
+      console.log("Filter", filter);
+      members = await Member.findAll({
+        where: {
+          [Op.and]: [
+            {
+              churchId: church.id,
+            },
+            {
+              ...filter,
+            },
+          ],
+        },
+      });
+    } else if (keyword) {
+      console.log("keyword filter");
+      members = await Member.findAll({
+        where: {
+          [Op.and]: [
+            {
+              churchId: church.id,
+            },
+            {
+              name: {
+                [Op.like]: `%${keyword}%`,
+              },
+            },
+          ],
+        },
+        limit: 5,
+      });
+      console.log(members);
+    } else {
+      members = await Member.findAll({
+        where: {
+          churchId: church.id,
+        },
+      });
+    }
+
+    successResponse(res, members);
   } catch (error) {
     errorResponse(res, error);
   }

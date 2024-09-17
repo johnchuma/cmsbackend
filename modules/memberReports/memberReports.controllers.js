@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { MemberReport, Church } = require("../../models");
+const { MemberReport, Church, Member } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
@@ -44,19 +44,14 @@ const getChurchMemberReports = async (req, res) => {
       include: [
         {
           model: Member,
-          include: [
-            {
-              model: Church,
-              where: {
-                churchId: church.id,
-              },
-            },
-          ],
+          churchId: church.id,
         },
       ],
     });
+    console.log(response);
     successResponse(res, response);
   } catch (error) {
+    console.log(error);
     errorResponse(res, error);
   }
 };

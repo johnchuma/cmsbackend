@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, DataTypes) {
-    await queryInterface.createTable("MemberReports", {
+    await queryInterface.createTable("Services", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,11 +13,11 @@ module.exports = {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      memberId: {
+      groupId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      type: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -25,9 +25,13 @@ module.exports = {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
+      repetition: {
+        type: DataTypes.ENUM("Once", "Daily", "Weekly", "Monthly"),
+        allowNull: false,
+      },
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -40,6 +44,6 @@ module.exports = {
     });
   },
   async down(queryInterface, DataTypes) {
-    await queryInterface.dropTable("MemberReports");
+    await queryInterface.dropTable("Services");
   },
 };

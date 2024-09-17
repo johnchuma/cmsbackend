@@ -8,6 +8,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      GroupLeader.belongsTo(models.Member);
+      GroupLeader.belongsTo(models.Group);
       // define association here
     }
   }
@@ -23,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       groupId: {
         type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      position:{
+        type: DataTypes.STRING,
         allowNull: false,
       },
       from: {

@@ -1,8 +1,8 @@
 "use strict";
-/** @type {import('sequelize-cli').Migration} */
+/** @type {import('seuqelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, DataTypes) {
-    await queryInterface.createTable("MemberReports", {
+    await queryInterface.createTable("Contributions", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,21 +13,13 @@ module.exports = {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      memberId: {
+      pledgeId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      type: {
-        type: DataTypes.STRING,
+      amount: {
+        type: DataTypes.DOUBLE,
         allowNull: false,
-      },
-      description: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
       },
       createdAt: {
         allowNull: false,
@@ -40,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, DataTypes) {
-    await queryInterface.dropTable("MemberReports");
+    await queryInterface.dropTable("Contributions");
   },
 };

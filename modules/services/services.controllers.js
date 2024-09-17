@@ -1,33 +1,34 @@
 const { Op } = require("sequelize");
-const { GroupMember, Product, Member } = require("../../models");
+const { Service, Product } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
 const { findChurchByUUID } = require("../churches/churches.controllers");
-const { findMemberByUUID } = require("../members/members.controllers");
 const { findGroupByUUID } = require("../group/group.controllers");
 
-const findGroupMemberByUUID = async (uuid) => {
+const findServiceByUUID = async (uuid) => {
   try {
-    const groupmember = await GroupMember.findOne({
+    const service = await Service.findOne({
       where: {
         uuid,
       },
     });
-    return groupmember;
+    return service;
   } catch (error) {
     console.log(error);
     throw error;
   }
 };
 
-const addGroupMember = async (req, res) => {
+const addService = async (req, res) => {
   try {
-    const { member_uuid, group_uuid } = req.body;
-    const member = await findMemberByUUID(member_uuid);
+    const { name, description, repetition, date, group_uuid } = req.body;
     const group = await findGroupByUUID(group_uuid);
-    const response = await GroupMember.create({
-      memberId: member.id,
+    const response = await Service.create({
+      name,
+      description,
+      repetition,
+      date,
       groupId: group.id,
     });
     successResponse(res, response);
@@ -36,16 +37,17 @@ const addGroupMember = async (req, res) => {
   }
 };
 
-const getGroupMembers = async (req, res) => {
+const getGroupServices = async (req, res) => {
   try {
     const { uuid } = req.params;
-    console.log(uuid);
     const group = await findGroupByUUID(uuid);
-    const response = await GroupMember.findAll({
+    const response = await Service.findAll({
+      attributes: {
+        exclude: ["id"],
+      },
       where: {
         groupId: group.id,
       },
-      include: [Member],
     });
     successResponse(res, response);
   } catch (error) {
@@ -53,31 +55,31 @@ const getGroupMembers = async (req, res) => {
   }
 };
 
-const getGroupMember = async (req, res) => {
+const getService = async (req, res) => {
   try {
     const { uuid } = req.params;
-    const groupmember = await findGroupMemberByUUID(uuid);
-    successResponse(res, groupmember);
+    const service = await findServiceByUUID(uuid);
+    successResponse(res, service);
   } catch (error) {
     errorResponse(res, error);
   }
 };
 
-const deleteGroupMember = async (req, res) => {
+const deleteService = async (req, res) => {
   try {
     const { uuid } = req.params;
-    const groupmember = await findGroupMemberByUUID(uuid);
-    const response = await groupmember.destroy();
+    const service = await findServiceByUUID(uuid);
+    const response = await service.destroy();
     successResponse(res, response);
   } catch (error) {
     errorResponse(res, error);
   }
 };
-const updateGroupMember = async (req, res) => {
+const updateService = async (req, res) => {
   try {
     const { uuid } = req.params;
-    const groupmember = await findGroupMemberByUUID(uuid);
-    const response = await groupmember.update({
+    const service = await findServiceByUUID(uuid);
+    const response = await service.update({
       ...req.body,
     });
     successResponse(res, response);
@@ -86,10 +88,10 @@ const updateGroupMember = async (req, res) => {
   }
 };
 module.exports = {
-  addGroupMember,
-  findGroupMemberByUUID,
-  getGroupMembers,
-  getGroupMember,
-  deleteGroupMember,
-  updateGroupMember,
+  addService,
+  findServiceByUUID,
+  getGroupServices,
+  getService,
+  deleteService,
+  updateService,
 };

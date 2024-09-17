@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { GroupLeader, Product } = require("../../models");
+const { GroupLeader, Product, Member } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
@@ -13,6 +13,7 @@ const findGroupLeaderByUUID = async (uuid) => {
       where: {
         uuid,
       },
+      include: [Member],
     });
     return groupleader;
   } catch (error) {
@@ -23,12 +24,13 @@ const findGroupLeaderByUUID = async (uuid) => {
 
 const addGroupLeader = async (req, res) => {
   try {
-    const { member_uuid, group_uuid, from, to } = req.body;
+    const { member_uuid, group_uuid, from, position, to } = req.body;
     const member = await findMemberByUUID(member_uuid);
     const group = await findGroupByUUID(group_uuid);
     const response = await GroupLeader.create({
       memberId: member.id,
       groupId: group.id,
+      position,
       to,
       from,
     });
@@ -66,12 +68,9 @@ const getGroupLeaders = async (req, res) => {
     const group = await findGroupByUUID(uuid);
     const response = await GroupLeader.findAll({
       where: {
-        [Op.and]: [
-          {
-            groupId: group.id,
-          },
-        ],
+        groupId: group.id,
       },
+      include: [Member],
     });
     successResponse(res, response);
   } catch (error) {
