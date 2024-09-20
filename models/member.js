@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       Member.belongsTo(models.Church);
       Member.hasMany(models.MemberReport);
       Member.hasMany(models.GroupMember);
+      Member.hasMany(models.Tithing);
     }
   }
   Member.init(

@@ -1,18 +1,17 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Pledge extends Model {
+  class ProjectExpense extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Pledge.belongsTo(models.Member);
       // define association here
     }
   }
-  Pledge.init(
+  ProjectExpense.init(
     {
       uuid: {
         type: DataTypes.UUID,
@@ -22,8 +21,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      memberId: {
-        type: DataTypes.INTEGER,
+      description: {
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       amount: {
@@ -33,8 +32,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Pledge",
+      modelName: "ProjectExpense",
     }
   );
-  return Pledge;
+  return ProjectExpense;
 };
