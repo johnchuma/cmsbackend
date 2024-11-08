@@ -36,8 +36,11 @@ const addContribution = async (req, res) => {
 const getPledgeContributions = async (req, res) => {
   try {
     const { uuid } = req.params;
+
     const pledge = await findPledgeByUUID(uuid);
-    const response = await Contribution.findAll({
+    const response = await Contribution.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       attributes: {
         exclude: ["id"],
       },
@@ -45,7 +48,11 @@ const getPledgeContributions = async (req, res) => {
         pledgeId: pledge.id,
       },
     });
-    successResponse(res, response);
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
   } catch (error) {
     errorResponse(res, error);
   }

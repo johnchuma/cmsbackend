@@ -40,8 +40,11 @@ const addService = async (req, res) => {
 const getGroupServices = async (req, res) => {
   try {
     const { uuid } = req.params;
+
     const group = await findGroupByUUID(uuid);
-    const response = await Service.findAll({
+    const response = await Service.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       attributes: {
         exclude: ["id"],
       },
@@ -49,7 +52,11 @@ const getGroupServices = async (req, res) => {
         groupId: group.id,
       },
     });
-    successResponse(res, response);
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
   } catch (error) {
     errorResponse(res, error);
   }

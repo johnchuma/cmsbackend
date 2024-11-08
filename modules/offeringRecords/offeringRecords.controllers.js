@@ -36,11 +36,35 @@ const addOfferingRecord = async (req, res) => {
 const getOfferingRecords = async (req, res) => {
   try {
     const { uuid } = req.params;
+
     const offering = await findOfferingByUUID(uuid);
-    const response = await OfferingRecord.findAll({
+    const response = await OfferingRecord.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       attributes: {
         exclude: ["id"],
       },
+      where: {
+        offeringId: offering.id,
+      },
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+
+const getOfferingRecordsReport = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const offering = await findOfferingByUUID(uuid);
+    const response = await OfferingRecord.findAll({
+      attributes: ["createdAt", "amount"],
+      order: [["createdAt"]],
       where: {
         offeringId: offering.id,
       },
@@ -87,6 +111,7 @@ module.exports = {
   addOfferingRecord,
   findOfferingRecordByUUID,
   getOfferingRecords,
+  getOfferingRecordsReport,
   getOfferingRecord,
   deleteOfferingRecord,
   updateOfferingRecord,

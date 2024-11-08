@@ -1,10 +1,24 @@
 const { Op } = require("sequelize");
-const { Member, User } = require("../../models");
+const {
+  Member,
+  User,
+  sequelize,
+  MemberReport,
+  Guest,
+  Group,
+  Service,
+} = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const bcrypt = require("bcrypt");
 const { findChurchByUUID } = require("../churches/churches.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
+const moment = require("moment");
+const {
+  removeNullResponse,
+  handleNullResponse,
+} = require("../../utils/removeNullResponse");
+const { monthsNames } = require("../../utils/constants");
 
 const findMemberByUUID = async (uuid) => {
   try {
@@ -82,28 +96,40 @@ const addMember = async (req, res) => {
 const getChurchMembers = async (req, res) => {
   try {
     const { uuid } = req.params;
-    console.log(uuid);
+    console.log("Hello");
     const church = await findChurchByUUID(uuid);
     const { group, keyword } = req.query;
     let members;
-    // console.log(group);
-    // console.log(keyword);
+
     if (group) {
       let filter = {};
-      // console.log(group);
       console.log("Filter", filter);
       switch (group) {
+        case "All":
+          break;
         case "Men":
           filter.gender = "Male";
           break;
         case "Women":
           filter.gender = "Female";
           break;
+        case "Baptized":
+          filter.isBaptized = true;
+          break;
+        case "Not Baptized":
+          filter.isBaptized = false;
+          break;
         case "Married":
           filter.maritalStatus = "Married";
           break;
         case "Not Married":
           filter.maritalStatus = "Not Married";
+          break;
+        case "Active":
+          filter.isActive = true;
+          break;
+        case "Not Active":
+          filter.isActive = false;
           break;
         case "Children":
           const date = new Date();
@@ -115,7 +141,9 @@ const getChurchMembers = async (req, res) => {
           break;
       }
       console.log("Filter", filter);
-      members = await Member.findAll({
+      members = await Member.findAndCountAll({
+        limit: req.limit,
+        offset: req.offset,
         where: {
           [Op.and]: [
             {
@@ -129,7 +157,9 @@ const getChurchMembers = async (req, res) => {
       });
     } else if (keyword) {
       console.log("keyword filter");
-      members = await Member.findAll({
+      members = await Member.findAndCountAll({
+        limit: req.limit,
+        offset: req.offset,
         where: {
           [Op.and]: [
             {
@@ -146,14 +176,20 @@ const getChurchMembers = async (req, res) => {
       });
       console.log(members);
     } else {
-      members = await Member.findAll({
+      members = await Member.findAndCountAll({
+        limit: req.limit,
+        offset: req.offset,
         where: {
           churchId: church.id,
         },
       });
     }
 
-    successResponse(res, members);
+    successResponse(res, {
+      page: req.page,
+      count: members.count,
+      data: members.rows,
+    });
   } catch (error) {
     errorResponse(res, error);
   }

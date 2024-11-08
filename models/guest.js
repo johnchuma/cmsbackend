@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      Guest.belongsTo(models.Service);
       // define association here
     }
   }
@@ -33,6 +34,22 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Guest",
+      scopes: {
+        excludeAttributes: {
+          attributes: {
+            exclude: [
+              "id",
+              "serviceId",
+              "ServiceId",
+              "description",
+              "name",
+              "uuid",
+              "createdAt",
+              "updatedAt",
+            ],
+          },
+        },
+      },
     }
   );
   return Guest;

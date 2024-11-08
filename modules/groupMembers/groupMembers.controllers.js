@@ -39,15 +39,31 @@ const addGroupMember = async (req, res) => {
 const getGroupMembers = async (req, res) => {
   try {
     const { uuid } = req.params;
-    console.log(uuid);
     const group = await findGroupByUUID(uuid);
-    const response = await GroupMember.findAll({
+    const { keyword } = req.query;
+
+    const response = await GroupMember.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       where: {
         groupId: group.id,
       },
-      include: [Member],
+      include: [
+        {
+          model: Member,
+          where: {
+            name: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+        },
+      ],
     });
-    successResponse(res, response);
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
   } catch (error) {
     errorResponse(res, error);
   }

@@ -37,8 +37,11 @@ const addTithing = async (req, res) => {
 const getChurchTithings = async (req, res) => {
   try {
     const { uuid } = req.params;
+
     const church = await findChurchByUUID(uuid);
-    const response = await Tithing.findAll({
+    const response = await Tithing.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       attributes: {
         exclude: ["id"],
       },
@@ -50,7 +53,37 @@ const getChurchTithings = async (req, res) => {
         },
       ],
     });
-    successResponse(res, response);
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+
+const getMemberTithings = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const member = await findMemberByUUID(uuid);
+    const response = await Tithing.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
+      order: [["createdAt", "DESC"]],
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        memberId: member.id,
+      },
+      include: [Member],
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
   } catch (error) {
     errorResponse(res, error);
   }
@@ -92,6 +125,7 @@ module.exports = {
   addTithing,
   findTithingByUUID,
   getChurchTithings,
+  getMemberTithings,
   getTithing,
   deleteTithing,
   updateTithing,

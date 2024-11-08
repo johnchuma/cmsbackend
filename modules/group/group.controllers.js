@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Group, Product } = require("../../models");
+const { Group, Product, sequelize } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
@@ -36,16 +36,31 @@ const addGroup = async (req, res) => {
 const getChurchGroups = async (req, res) => {
   try {
     const { uuid } = req.params;
+
     const church = await findChurchByUUID(uuid);
-    const response = await Group.findAll({
+    const response = await Group.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       attributes: {
         exclude: ["id"],
+        include: [
+          [
+            sequelize.literal(
+              `(SELECT COUNT(*) FROM GroupMembers WHERE GroupMembers.groupId = Group.id)`
+            ),
+            "members", // Alias for the count of members in each group
+          ],
+        ],
       },
       where: {
         churchId: church.id,
       },
     });
-    successResponse(res, response);
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
   } catch (error) {
     errorResponse(res, error);
   }

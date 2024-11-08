@@ -37,8 +37,11 @@ const addOffering = async (req, res) => {
 const getServiceOfferings = async (req, res) => {
   try {
     const { uuid } = req.params;
+
     const service = await findServiceByUUID(uuid);
-    const response = await Offering.findAll({
+    const response = await Offering.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       attributes: {
         exclude: ["id"],
       },
@@ -46,7 +49,11 @@ const getServiceOfferings = async (req, res) => {
         serviceId: service.id,
       },
     });
-    successResponse(res, response);
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
   } catch (error) {
     errorResponse(res, error);
   }

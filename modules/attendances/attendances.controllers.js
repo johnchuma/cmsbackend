@@ -36,14 +36,40 @@ const addAttendance = async (req, res) => {
 const getServiceAttendances = async (req, res) => {
   try {
     const { uuid } = req.params;
+
     const service = await findServiceByUUID(uuid);
-    const response = await Attendance.findAll({
+    const response = await Attendance.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
+      order: [["createdAt", "DESC"]],
+
       attributes: {
         exclude: ["id"],
       },
       where: {
         serviceId: service.id,
       },
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+
+const getAttendanceReport = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const service = await findServiceByUUID(uuid);
+    const response = await Attendance.findAll({
+      attributes: ["createdAt", "count"],
+      where: {
+        serviceId: service.id,
+      },
+      order: [["createdAt"]],
     });
     successResponse(res, response);
   } catch (error) {
@@ -88,6 +114,7 @@ module.exports = {
   findAttendanceByUUID,
   getServiceAttendances,
   getAttendance,
+  getAttendanceReport,
   deleteAttendance,
   updateAttendance,
 };

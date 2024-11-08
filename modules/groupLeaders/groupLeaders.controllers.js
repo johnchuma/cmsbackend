@@ -44,7 +44,9 @@ const getActiveGroupLeaders = async (req, res) => {
   try {
     const { uuid } = req.params;
     const group = await findGroupByUUID(uuid);
-    const response = await GroupLeader.findAll({
+    const response = await GroupLeader.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       where: {
         [Op.and]: [
           {
@@ -56,7 +58,11 @@ const getActiveGroupLeaders = async (req, res) => {
         ],
       },
     });
-    successResponse(res, response);
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
   } catch (error) {
     errorResponse(res, error);
   }
@@ -66,17 +72,24 @@ const getGroupLeaders = async (req, res) => {
   try {
     const { uuid } = req.params;
     const group = await findGroupByUUID(uuid);
-    const response = await GroupLeader.findAll({
+    const response = await GroupLeader.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       where: {
         groupId: group.id,
       },
       include: [Member],
     });
-    successResponse(res, response);
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
   } catch (error) {
     errorResponse(res, error);
   }
 };
+
 const getGroupLeader = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -97,6 +110,7 @@ const deleteGroupLeader = async (req, res) => {
     errorResponse(res, error);
   }
 };
+
 const updateGroupLeader = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -109,6 +123,7 @@ const updateGroupLeader = async (req, res) => {
     errorResponse(res, error);
   }
 };
+
 module.exports = {
   addGroupLeader,
   findGroupLeaderByUUID,

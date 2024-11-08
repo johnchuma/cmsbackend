@@ -37,11 +37,35 @@ const addGroupExpense = async (req, res) => {
 const getGroupExpenses = async (req, res) => {
   try {
     const { uuid } = req.params;
+
     const group = await findGroupByUUID(uuid);
-    const response = await GroupExpense.findAll({
+    const response = await GroupExpense.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       attributes: {
         exclude: ["id"],
       },
+      where: {
+        groupId: group.id,
+      },
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+const getGroupExpensesReport = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+
+    const group = await findGroupByUUID(uuid);
+    const response = await GroupExpense.findAll({
+      order: [["createdAt"]],
+      attributes: ["createdAt", "amount"],
       where: {
         groupId: group.id,
       },
@@ -51,7 +75,6 @@ const getGroupExpenses = async (req, res) => {
     errorResponse(res, error);
   }
 };
-
 const getGroupExpense = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -88,6 +111,7 @@ module.exports = {
   addGroupExpense,
   findGroupExpenseByUUID,
   getGroupExpenses,
+  getGroupExpensesReport,
   getGroupExpense,
   deleteGroupExpense,
   updateGroupExpense,

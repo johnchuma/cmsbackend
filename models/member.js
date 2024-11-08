@@ -74,10 +74,42 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
     },
     {
       sequelize,
       modelName: "Member",
+      scopes: {
+        excludeAttributes: {
+          attributes: {
+            exclude: [
+              "id",
+              "churchId",
+              "disability",
+              "gender",
+              "address",
+              "phone",
+              "email",
+              "birthDate",
+              "uuid",
+              "userId",
+              "UserId",
+              "ChurchId",
+              "createdAt",
+              "updatedAt",
+              "name",
+              "isBaptized",
+              "maritalStatus",
+              "work",
+              "isHouseOwner",
+              "isActive",
+            ],
+          },
+        },
+      },
     }
   );
   return Member;

@@ -39,23 +39,57 @@ const addMemberReport = async (req, res) => {
 const getChurchMemberReports = async (req, res) => {
   try {
     const { uuid } = req.params;
+
     const church = await findChurchByUUID(uuid);
-    const response = await MemberReport.findAll({
+    const response = await MemberReport.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       include: [
         {
           model: Member,
-          churchId: church.id,
+          where: {
+            churchId: church.id,
+          },
         },
       ],
     });
-    console.log(response);
-    successResponse(res, response);
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
   } catch (error) {
     console.log(error);
     errorResponse(res, error);
   }
 };
-
+const getMemberReports = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const member = await findMemberByUUID(uuid);
+    const response = await MemberReport.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
+      where: {
+        memberId: member.id,
+      },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Member,
+        },
+      ],
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    console.log(error);
+    errorResponse(res, error);
+  }
+};
 const getMemberReport = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -93,6 +127,7 @@ module.exports = {
   findMemberReportByUUID,
   getChurchMemberReports,
   getMemberReport,
+  getMemberReports,
   deleteMemberReport,
   updateMemberReport,
 };

@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Guest, Product } = require("../../models");
+const { Guest, Product, sequelize } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
@@ -38,7 +38,9 @@ const getServiceGuests = async (req, res) => {
   try {
     const { uuid } = req.params;
     const service = await findServiceByUUID(uuid);
-    const response = await Guest.findAll({
+    const response = await Guest.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       attributes: {
         exclude: ["id"],
       },
@@ -46,6 +48,34 @@ const getServiceGuests = async (req, res) => {
         serviceId: service.id,
       },
     });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+
+const getServiceGuestsReport = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    console.log(uuid);
+    const service = await findServiceByUUID(uuid);
+    // Fetch guest count grouped by date
+    const response = await Guest.findAll({
+      attributes: [
+        [sequelize.fn("DATE", sequelize.col("createdAt")), "createdAt"], // Group by date
+        [sequelize.fn("COUNT", sequelize.col("id")), "count"], // Count the guests
+      ],
+      where: {
+        serviceId: service.id,
+      },
+      group: [sequelize.fn("DATE", sequelize.col("createdAt"))], // Group by the date
+      order: [[sequelize.fn("DATE", sequelize.col("createdAt")), "ASC"]], // Order by date
+    });
+
     successResponse(res, response);
   } catch (error) {
     errorResponse(res, error);
@@ -88,6 +118,7 @@ module.exports = {
   addGuest,
   findGuestByUUID,
   getServiceGuests,
+  getServiceGuestsReport,
   getGuest,
   deleteGuest,
   updateGuest,

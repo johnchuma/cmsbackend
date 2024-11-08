@@ -1,28 +1,30 @@
-const { errorResponse } = require("./responses");
-
-// Set your app credentials
+const axios = require("axios");
 require("dotenv").config();
 
-const credentials = {
-  apiKey: process.env.SMS_API,
-  username: "hakikiapp",
-};
-
-// Initialize the SDK
-const AfricasTalking = require("africastalking")(credentials);
-
-// Get the SMS service
-const sms = AfricasTalking.SMS;
-
-module.exports.sendMessage = async({ numbers,message }) => {
-    const options = {
-      to: numbers,
-      message: message,
-      from: "15054",
+const sendSMS = async (number, message) => {
+  try {
+    const data = {
+      from: "RMNDR",
+      to: number,
+      text: message,
     };
-    console.log("Options",options)
-    const response = await sms.send(options)
-    console.log("Response",response)
-    return response;
- 
+    const config = {
+      method: "post",
+      url: "https://messaging-service.co.tz/api/sms/v1/test/text/single",
+      headers: {
+        Authorization: process.env.SMS_AUTH,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      data,
+    };
+    const response = await axios(config);
+    const jsonString = response.data;
+    return jsonString;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 };
+
+module.exports = sendSMS;

@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Pledge.belongsTo(models.Member);
+      Pledge.belongsTo(models.Project);
       // define association here
     }
   }

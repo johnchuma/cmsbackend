@@ -7,11 +7,12 @@ const {
   deleteService,
   getGroupServices,
 } = require("./services.controllers");
+const { getPagination } = require("../../utils/getPagination");
 
 const router = Router();
 
 router.post("/", validateJWT, addService);
-router.get("/group/:uuid", validateJWT, getGroupServices);
+router.get("/group/:uuid", validateJWT, getPagination, getGroupServices);
 router.get("/:uuid", validateJWT, getService);
 router.patch("/:uuid", validateJWT, updateService);
 router.delete("/:uuid", validateJWT, deleteService);

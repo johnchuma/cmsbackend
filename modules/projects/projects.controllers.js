@@ -1,5 +1,11 @@
 const { Op } = require("sequelize");
-const { Project, Product } = require("../../models");
+const {
+  Project,
+  Product,
+  Pledge,
+  Contribution,
+  sequelize,
+} = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
@@ -37,10 +43,66 @@ const addProject = async (req, res) => {
 const getGroupProjects = async (req, res) => {
   try {
     const { uuid } = req.params;
+
+    const group = await findGroupByUUID(uuid);
+    const response = await Project.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
+      attributes: {
+        include: [
+          [
+            sequelize.literal(
+              `(SELECT COALESCE(SUM(amount), 0) FROM Pledges WHERE projectId = Project.id)`
+            ),
+            "pledges", // Alias for the count of members in each group
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COALESCE(SUM(amount), 0) FROM Contributions WHERE Contributions.pledgeId IN 
+                (SELECT id FROM Pledges WHERE Pledges.projectId = Project.id)
+              )`
+            ),
+            "contributions", // Alias for the total sum of contributions related to the pledges
+          ],
+        ],
+      },
+      where: {
+        groupId: group.id,
+      },
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+
+const getGroupProjectsReport = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+
     const group = await findGroupByUUID(uuid);
     const response = await Project.findAll({
       attributes: {
-        exclude: ["id"],
+        include: [
+          [
+            sequelize.literal(
+              `(SELECT COALESCE(SUM(amount), 0) FROM Pledges WHERE projectId = Project.id)`
+            ),
+            "pledges", // Alias for the count of members in each group
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COALESCE(SUM(amount), 0) FROM Contributions WHERE Contributions.pledgeId IN 
+                (SELECT id FROM Pledges WHERE Pledges.projectId = Project.id)
+              )`
+            ),
+            "contributions", // Alias for the total sum of contributions related to the pledges
+          ],
+        ],
       },
       where: {
         groupId: group.id,
@@ -88,6 +150,7 @@ module.exports = {
   addProject,
   findProjectByUUID,
   getGroupProjects,
+  getGroupProjectsReport,
   getProject,
   deleteProject,
   updateProject,

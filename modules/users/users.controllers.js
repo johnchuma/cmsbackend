@@ -117,7 +117,9 @@ const login = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const response = await User.findAll({
+    const response = await User.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       attributes: {
         exclude: ["id"],
       },

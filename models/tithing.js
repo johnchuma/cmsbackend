@@ -29,7 +29,23 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
+
       modelName: "Tithing",
+      scopes: {
+        excludeAttributes: {
+          attributes: {
+            exclude: [
+              "memberId",
+              "MemberId",
+              "amount",
+              "id",
+              "uuid",
+              "createdAt",
+              "updatedAt",
+            ],
+          },
+        },
+      },
     }
   );
   return Tithing;

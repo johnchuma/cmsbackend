@@ -40,12 +40,34 @@ const addProjectExpense = async (req, res) => {
 const getProjectExpenses = async (req, res) => {
   try {
     const { uuid } = req.params;
+
     const project = await findProjectByUUID(uuid);
 
-    const response = await ProjectExpense.findAll({
+    const response = await ProjectExpense.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
       attributes: {
         exclude: ["id"],
       },
+      where: {
+        projectId: project.id,
+      },
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+const getProjectExpensesReport = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const project = await findProjectByUUID(uuid);
+    const response = await ProjectExpense.findAll({
+      attributes: ["createdAt", "amount"],
       where: {
         projectId: project.id,
       },
@@ -92,6 +114,7 @@ module.exports = {
   addProjectExpense,
   findProjectExpenseByUUID,
   getProjectExpenses,
+  getProjectExpensesReport,
   getProjectExpense,
   deleteProjectExpense,
   updateProjectExpense,
