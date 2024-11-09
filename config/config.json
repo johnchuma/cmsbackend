@@ -1,23 +1,23 @@
 {
   "development": {
-    "username": "root",
-    "password": "",
-    "database": "cms",
-    "host": "localhost",
+    "username": "hemani_user",
+    "password": "Hemani@2024",
+    "database": "hemani",
+    "host": "109.176.199.184",
     "dialect": "mysql"
   },
   "test": {
-    "username": "john",
-    "password": "@NeemaFeruzi56664466",
-    "database": "cms",
-    "host": "167.88.168.165",
+    "username": "hemani_user",
+    "password": "Hemani@2024",
+    "database": "hemani",
+    "host": "109.176.199.184",
     "dialect": "mysql"
   },
   "production": {
-    "username": "john",
-    "password": "@NeemaFeruzi56664466",
-    "database": "cms",
-    "host": "127.0.0.1",
+    "username": "hemani_user",
+    "password": "Hemani@2024",
+    "database": "hemani",
+    "host": "109.176.199.184",
     "dialect": "mysql"
   }
 }
