@@ -47,6 +47,7 @@ const getChurches = async (req, res) => {
   }
 };
 
+
 const getUserChurches = async (req, res) => {
   try {
     const user = req.user;

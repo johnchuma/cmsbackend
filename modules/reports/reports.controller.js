@@ -157,13 +157,19 @@ const getMemberStats = async (req, res) => {
       },
       group: ["Guest.id"],
     });
-
+    console.log(
+      stats,
+      membersIncrease,
+      sicknessReports,
+      traveledReports,
+      guestsReports
+    );
     successResponse(res, {
       stats: removeNullResponse(stats),
       membersIncrease: removeNullResponse(membersIncrease),
       sicknessReports: handleNullResponse(sicknessReports),
-      traveledReports: handleNullResponse(sicknessReports),
-      guestsReports: removeNullResponse(guestsReports),
+      traveledReports: handleNullResponse(traveledReports),
+      guestsReports: guestsReports,
     });
   } catch (error) {
     errorResponse(res, error);
