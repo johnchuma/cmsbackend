@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { User } = require("../../models");
+const { User, Church } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { errorResponse, successResponse } = require("../../utils/responses");
 const bcrypt = require("bcrypt");
@@ -13,6 +13,7 @@ const findUserByUUID = async (uuid) => {
       where: {
         uuid,
       },
+      include: [Church],
     });
     return user;
   } catch (error) {
@@ -89,7 +90,7 @@ const login = async (req, res) => {
         email,
       },
     });
-    if (user) {
+    if (user && user.password) {
       const result = await bcrypt.compare(password, user.password);
       console.log(result);
       if (result) {
@@ -107,7 +108,10 @@ const login = async (req, res) => {
         });
       }
     } else {
-      res.status(404).send({ status: false, message: "User does not exist" });
+      res.status(404).send({
+        status: false,
+        message: "User does not exist/registered with google",
+      });
     }
   } catch (error) {
     console.log(error);
@@ -129,6 +133,7 @@ const getUsers = async (req, res) => {
     errorResponse(res, error);
   }
 };
+
 const getUserInfo = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -138,6 +143,7 @@ const getUserInfo = async (req, res) => {
     errorResponse(res, error);
   }
 };
+
 const sendRecoveryCode = async (req, res) => {
   try {
     const { email } = req.body;

@@ -15,7 +15,7 @@ const router = Router();
 router.post("/", validateJWT, addProject);
 router.get("/group/:uuid", validateJWT, getPagination, getGroupProjects);
 router.get("/report/group/:uuid", validateJWT, getGroupProjectsReport);
-router.get("/:uuid", validateJWT, getProject);
+router.get("/:uuid", getProject);
 router.patch("/:uuid", validateJWT, updateProject);
 router.delete("/:uuid", validateJWT, deleteProject);
 

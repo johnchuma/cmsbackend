@@ -205,6 +205,21 @@ const getMember = async (req, res) => {
   }
 };
 
+const getChurchMemberCount = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const church = await findChurchByUUID(uuid);
+    const count = await Member.count({
+      where: {
+        churchId: church.id,
+      },
+    });
+    successResponse(res, count);
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+
 const deleteMember = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -233,5 +248,6 @@ module.exports = {
   getChurchMembers,
   getMember,
   deleteMember,
+  getChurchMemberCount,
   updateMember,
 };

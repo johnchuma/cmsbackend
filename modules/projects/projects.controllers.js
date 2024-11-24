@@ -3,6 +3,8 @@ const {
   Project,
   Product,
   Pledge,
+  Group,
+  Church,
   Contribution,
   sequelize,
 } = require("../../models");
@@ -17,6 +19,12 @@ const findProjectByUUID = async (uuid) => {
       where: {
         uuid,
       },
+      include: [
+        {
+          model: Group,
+          include: [Church],
+        },
+      ],
     });
     return project;
   } catch (error) {

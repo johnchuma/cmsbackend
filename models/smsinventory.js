@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Project extends Model {
+  class SMSInventory extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,32 +9,31 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Project.belongsTo(models.Group);
     }
   }
-  Project.init(
+  SMSInventory.init(
     {
       uuid: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      groupId: {
+      count: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
+      churchId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      description: {
-        type: DataTypes.TEXT,
-        defaultValue: "",
+      transaction: {
+        type: DataTypes.JSON,
+        allowNull: true,
       },
     },
     {
       sequelize,
-      modelName: "Project",
+      modelName: "SMSInventory",
     }
   );
-  return Project;
+  return SMSInventory;
 };
