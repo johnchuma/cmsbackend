@@ -38,6 +38,7 @@ const AttendancesRoutes = require("./modules/attendances/attendances.routes");
 const GroupCalenderRoutes = require("./modules/groupCalender/groupCalender.routes");
 const ReportRoutes = require("./modules/reports/reports.routes");
 const MessagesRoutes = require("./modules/messages/messages.routes");
+const { connectTCP } = require("./modules/tcp/tcp.controllers");
 
 const app = express();
 
@@ -68,7 +69,7 @@ app.use("/member-reports", MemberReportsRoutes);
 app.use("/group-calender", GroupCalenderRoutes);
 app.use("/reports", ReportRoutes);
 app.use("/messages", MessagesRoutes);
-
+app.get("/tcp",connectTCP)
 app.get("/", (req, res) => {
   try {
     res.send("Server is working fine");
