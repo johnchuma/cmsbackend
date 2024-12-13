@@ -3,21 +3,21 @@
     "username": "hemani_user",
     "password": "Hemani@2024",
     "database": "hemani",
-    "host": "109.176.199.184",
+    "host": "107.189.16.44",
     "dialect": "mysql"
   },
   "test": {
     "username": "hemani_user",
     "password": "Hemani@2024",
     "database": "hemani",
-    "host": "109.176.199.184",
+    "host": "107.189.16.44",
     "dialect": "mysql"
   },
   "production": {
     "username": "hemani_user",
     "password": "Hemani@2024",
     "database": "hemani",
-    "host": "109.176.199.184",
+    "host": "107.189.16.44",
     "dialect": "mysql"
   }
 }
