@@ -142,7 +142,7 @@ const getChurchMembers = async (req, res) => {
         default:
           break;
       }
-      console.log("Filter", filter);
+      console.log("Filter", filter,keyword);
       members = await Member.findAndCountAll({
         limit: req.limit,
         offset: req.offset,
@@ -153,6 +153,9 @@ const getChurchMembers = async (req, res) => {
             },
             {
               ...filter,
+              name: {
+                [Op.like]: `%${keyword}%`,
+              },
             },
           ],
         },
@@ -168,6 +171,7 @@ const getChurchMembers = async (req, res) => {
               churchId: church.id,
             },
             {
+              
               name: {
                 [Op.like]: `%${keyword}%`,
               },

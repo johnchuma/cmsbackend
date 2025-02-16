@@ -59,12 +59,23 @@ const getChurchTithings = async (req, res) => {
           model: Member,
           where:{
            churchId: church.id,
-          }
+          },
+          required:true
         },
       ],
     });
     const totalTithings = await Tithing.sum("amount",{
-      where:filter
+      where:filter,
+      include:[
+        {
+          model: Member,
+          where:{
+           churchId: church.id,
+          },
+          attributes:[],
+          required:true
+        },
+      ]
     })
     successResponse(res, {
       page: req.page,

@@ -193,6 +193,7 @@ const getFinanceStats = async (req, res) => {
             churchId: church.id,
           },
           attributes: [],
+          required:true
         },
       ],
       attributes: [
@@ -218,6 +219,7 @@ const getFinanceStats = async (req, res) => {
             churchId: church.id,
           },
           attributes: [],
+          required:true
         },
       ],
       attributes: [
@@ -290,7 +292,14 @@ const getFinanceStats = async (req, res) => {
             churchId: church.id,
           },
           attributes: [],
+          required:true
+
         },
+        {
+          model:Project,
+          attributes:[],
+          required:true
+        }
       ],
       where: sequelize.where(
         sequelize.fn("YEAR", sequelize.col("Pledge.createdAt")),
@@ -308,8 +317,14 @@ const getFinanceStats = async (req, res) => {
                 churchId: church.id,
               },
               attributes:[],
-              required:true
+              required:true,
+
             },
+            {
+              model:Project,
+              attributes:[],
+              required:true
+            }
           ],
           attributes: [],
           required:true
@@ -339,13 +354,16 @@ const getFinanceStats = async (req, res) => {
                 churchId: church.id,
               },
               attributes: [],
+              required:true
             },
             {
               model: Project, // Include the Project model to access the project name
               attributes: [],
+              required:true
             },
           ],
           attributes: [],
+          required:true
         },
       ],
       where: sequelize.where(
