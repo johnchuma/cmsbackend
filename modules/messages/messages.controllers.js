@@ -4,13 +4,41 @@ const {
   GroupMember,
   Member,
   DeliveryReport,
+  SMSInventory,
   Message,
 } = require("../../models");
 const { errorResponse, successResponse } = require("../../utils/responses");
 const addPrefixToPhoneNumber = require("../../utils/add_number_prefix");
 const sendSMS = require("../../utils/send_sms");
 const { promise } = require("bcrypt/promises");
+const { findChurchByUUID } = require("../churches/churches.controllers");
 
+const buySMS = async (req, res) => {
+  try {
+    const { church_uuid, count } = req.body;
+    const church = await findChurchByUUID(church_uuid);
+    const response = await SMSInventory.create({
+      churchId: church.id,
+      count,
+    });
+    successResponse(res, response);
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+const sendMessages = async (req, res) => {
+  try {
+    const { recepients, message, church_uuid } = req.body;
+    const promises = recepients.map(async (item) => {
+      const number = addPrefixToPhoneNumber(item.phone);
+      return await sendSMS(number, message);
+    });
+    const response = await Promise.all(promises);
+    successResponse(res, response);
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
 const sendMessagesToGroup = async (req, res) => {
   try {
     const { message } = req.body;
@@ -66,4 +94,4 @@ const sendMessagesToGroup = async (req, res) => {
   }
 };
 
-module.exports = { sendMessagesToGroup };
+module.exports = { sendMessagesToGroup, buySMS, sendMessages };

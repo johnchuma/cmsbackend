@@ -1,28 +1,23 @@
 const axios = require("axios");
 require("dotenv").config();
 
-const sendSMS = async (number, message) => {
+const sendSMS = async (number, message, language = "English") => {
   try {
-    const data = {
-      from: "RMNDR",
-      to: number,
-      text: message,
-    };
-    const config = {
-      method: "post",
-      url: "https://messaging-service.co.tz/api/sms/v1/test/text/single",
-      headers: {
-        Authorization: process.env.SMS_AUTH,
-        "Content-Type": "application/json",
-        Accept: "application/json",
+    const response = await axios.get("https://mshastra.com/sendurlcomma.aspx", {
+      params: {
+        user: process.env.SMS_USER, // Profile ID
+        pwd: process.env.SMS_PASS, // Password
+        senderid: process.env.SMS_SENDER, // Sender ID
+        mobileno: number, // Mobile number with country code
+        msgtext: message, // Text message
+        language: language, // Unicode/English
+        CountryCode: 255,
       },
-      data,
-    };
-    const response = await axios(config);
-    const jsonString = response.data;
-    return jsonString;
+    });
+    console.log(response);
+    return response.data;
   } catch (error) {
-    console.log(error);
+    console.error("SMS Sending Error:", error);
     return error;
   }
 };
