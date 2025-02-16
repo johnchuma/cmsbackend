@@ -26,9 +26,11 @@ const addGroupMember = async (req, res) => {
     const { member_uuid, group_uuid } = req.body;
     const member = await findMemberByUUID(member_uuid);
     const group = await findGroupByUUID(group_uuid);
-    const response = await GroupMember.create({
-      memberId: member.id,
+    const response = await GroupMember.findOrCreate({
+      where:{
+        memberId: member.id,
       groupId: group.id,
+      }
     });
     successResponse(res, response);
   } catch (error) {
@@ -51,14 +53,15 @@ const getGroupMembers = async (req, res) => {
       include: [
         {
           model: Member,
-          where: {
-            name: {
-              [Op.like]: `%${keyword}%`,
-            },
-          },
+          where:{
+            name:{
+              [Op.like]:`%${keyword}%`
+            }
+          }
         },
       ],
     });
+    console.log(response)
     successResponse(res, {
       page: req.page,
       count: response.count,

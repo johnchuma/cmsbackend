@@ -12,7 +12,7 @@ const {
 const router = Router();
 
 router.post("/", validateJWT, addChurch);
-router.get("/", validateJWT, getChurches);
+router.get("/", getChurches);
 router.get("/user", validateJWT, getUserChurches);
 router.get("/:uuid", getChurch);
 router.patch("/:uuid", validateJWT, updateChurch);

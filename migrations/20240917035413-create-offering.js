@@ -13,6 +13,7 @@ module.exports = {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
+     
       serviceId: {
         type: DataTypes.INTEGER,
         allowNull: false,

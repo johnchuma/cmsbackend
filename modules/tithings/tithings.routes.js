@@ -16,8 +16,7 @@ const router = Router();
 
 router.post("/", validateJWT, addTithing);
 router.get("/church/:uuid", validateJWT, getPagination, getChurchTithings);
-router.get("/member", validateJWT, getPagination, getSingleMemberTithings);
-router.get("/member/:uuid", validateJWT, getPagination, getMemberTithings);
+router.get("/member/:uuid",  getPagination, getMemberTithings);
 router.get("/:uuid", validateJWT, getTithing);
 router.patch("/:uuid", validateJWT, updateTithing);
 router.delete("/:uuid", validateJWT, deleteTithing);

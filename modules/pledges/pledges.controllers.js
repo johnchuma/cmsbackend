@@ -25,10 +25,14 @@ const addPledge = async (req, res) => {
     const { amount, member_uuid, project_uuid } = req.body;
     const project = await findProjectByUUID(project_uuid);
     const member = await findMemberByUUID(member_uuid);
-    const response = await Pledge.create({
-      amount,
+    const response = await Pledge.findOrCreate({
+      defaults:{
+        amount
+      },
+      where:{
       memberId: member.id,
       projectId: project.id,
+      }
     });
     successResponse(res, response);
   } catch (error) {
@@ -38,7 +42,7 @@ const addPledge = async (req, res) => {
 const getProjectPledges = async (req, res) => {
   try {
     const { uuid } = req.params;
-
+const {keyword} = req.query;
     const project = await findProjectByUUID(uuid);
     const response = await Pledge.findAndCountAll({
       limit: req.limit,
@@ -63,7 +67,14 @@ const getProjectPledges = async (req, res) => {
       where: {
         projectId: project.id,
       },
-      include: [Member],
+      include: [{
+        model:Member,
+        where:{
+          name:{
+            [Op.like]:`%${keyword}%`
+          }
+        }
+      }],
     });
     successResponse(res, {
       page: req.page,

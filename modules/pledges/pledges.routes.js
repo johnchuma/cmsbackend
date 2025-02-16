@@ -16,8 +16,7 @@ const router = Router();
 
 router.post("/", validateJWT, addPledge);
 router.get("/project/:uuid", validateJWT, getPagination, getProjectPledges);
-router.get("/member/", validateJWT, getPagination, getSingleMemberPledges);
-router.get("/member/:uuid", validateJWT, getPagination, getMemberPledges);
+router.get("/member/:uuid",  getPagination, getMemberPledges);
 router.get("/report/project/:uuid", validateJWT, getProjectPledgesReport);
 router.get("/:uuid", validateJWT, getPledge);
 router.patch("/:uuid", validateJWT, updatePledge);

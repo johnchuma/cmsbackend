@@ -17,6 +17,10 @@ module.exports = {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      memberId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       amount: {
         type: DataTypes.DOUBLE,
         allowNull: false,

@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       OfferingRecord.belongsTo(models.Offering);
+      OfferingRecord.belongsTo(models.Member);
     }
   }
   OfferingRecord.init(
@@ -21,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       offeringId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+      },
+      memberId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
       },
       amount: {
         type: DataTypes.DOUBLE,
