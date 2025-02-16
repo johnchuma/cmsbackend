@@ -48,7 +48,6 @@ const addMember = async (req, res) => {
       isHouseOwner,
       maritalStatus,
       phone,
-
       work,
     } = req.body;
     let church = await findChurchByUUID(church_uuid);
@@ -88,6 +87,33 @@ const addMember = async (req, res) => {
     });
 
     successResponse(res, response);
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+const loginAsMember = async (req, res) => {
+  try {
+    const { phone, dob } = req.body;
+    let member = await Member.findOne({
+      where: {
+        phone,
+        birthDate: new Date(dob),
+      },
+    });
+    console.log(member);
+    if (member) {
+      const tokens = generateJwtTokens(member);
+      res.status(200).json({
+        status: true,
+        tokens,
+        member,
+      });
+    } else {
+      res.status(401).json({
+        status: false,
+        message: "Wrong login information",
+      });
+    }
   } catch (error) {
     errorResponse(res, error);
   }
@@ -184,7 +210,7 @@ const getChurchMembers = async (req, res) => {
         },
       });
     }
-
+    console.log(members.rows);
     successResponse(res, {
       page: req.page,
       count: members.count,
@@ -248,6 +274,7 @@ module.exports = {
   getChurchMembers,
   getMember,
   deleteMember,
+  loginAsMember,
   getChurchMemberCount,
   updateMember,
 };

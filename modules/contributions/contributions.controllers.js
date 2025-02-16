@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Contribution, Product } = require("../../models");
+const { Contribution, Product, Pledge, Project } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
@@ -32,7 +32,35 @@ const addContribution = async (req, res) => {
     errorResponse(res, error);
   }
 };
-
+const getSingleMemberContributions = async (req, res) => {
+  try {
+    const member = req.user;
+    const response = await Contribution.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
+      attributes: {
+        exclude: ["id"],
+      },
+      include: [
+        {
+          model: Pledge,
+          where: {
+            memberId: member.id,
+          },
+          required: true,
+          include: [Project],
+        },
+      ],
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
 const getPledgeContributions = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -94,6 +122,7 @@ module.exports = {
   addContribution,
   findContributionByUUID,
   getPledgeContributions,
+  getSingleMemberContributions,
   getContribution,
   deleteContribution,
   updateContribution,

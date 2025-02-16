@@ -3,7 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
-
+const { Member } = require("./models");
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -37,9 +37,14 @@ const OfferingRecordsRoutes = require("./modules/offeringRecords/offeringRecords
 const AttendancesRoutes = require("./modules/attendances/attendances.routes");
 const GroupCalenderRoutes = require("./modules/groupCalender/groupCalender.routes");
 const ReportRoutes = require("./modules/reports/reports.routes");
+const PosterRoutes = require("./modules/posters/posters.routes");
+const PosterRequestRoutes = require("./modules/posterRequests/posterRequests.routes");
+const PosterRequestAttachmentRoutes = require("./modules/posterRequestAttachment/posterRequestAttachment.routes");
 const MessagesRoutes = require("./modules/messages/messages.routes");
 const { connectTCP } = require("./modules/tcp/tcp.controllers");
-
+const { initializeApp } = require("firebase/app");
+const { getFirestore, getDocs, collection } = require("firebase/firestore");
+const { successResponse } = require("./utils/responses");
 const app = express();
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -68,8 +73,12 @@ app.use("/project-expenses", ProjectExpenseRoutes);
 app.use("/member-reports", MemberReportsRoutes);
 app.use("/group-calender", GroupCalenderRoutes);
 app.use("/reports", ReportRoutes);
+app.use("/posters", PosterRoutes);
+app.use("/poster-requests", PosterRequestRoutes);
+app.use("/poster-request-attachments", PosterRequestAttachmentRoutes);
 app.use("/messages", MessagesRoutes);
-app.get("/tcp",connectTCP)
+app.get("/tcp", connectTCP);
+
 app.get("/", (req, res) => {
   try {
     res.send("Server is working fine");

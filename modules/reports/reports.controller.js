@@ -14,6 +14,7 @@ const {
   Contribution,
   Pledge,
   Service,
+  Church,
 } = require("../../models");
 const { monthsNames } = require("../../utils/constants");
 const {
@@ -368,4 +369,81 @@ const getFinanceStats = async (req, res) => {
   }
 };
 
-module.exports = { getMemberStats, getFinanceStats };
+const getSingleMemberStats = async (req, res) => {
+  try {
+    const member = req.user;
+    console.log(member);
+    const church = await Church.findOne({
+      where: {
+        id: member.churchId,
+      },
+    });
+    const tithings = await Tithing.sum("amount", {
+      where: {
+        memberId: member.id,
+      },
+      include: [
+        {
+          model: Member,
+          where: {
+            churchId: member.churchId,
+          },
+          required: true,
+        },
+      ],
+    });
+    const pledges = await Pledge.findAll({
+      where: {
+        memberId: member.id,
+      },
+      include: [
+        {
+          model: Member,
+          where: {
+            churchId: member.churchId,
+          },
+          required: true,
+        },
+        {
+          model: Contribution,
+        },
+      ],
+    });
+    console.log(pledges);
+    let unpaidPledges = pledges.reduce(
+      (prev, item) =>
+        prev +
+        (item.amount -
+          item.Contributions.reduce((prev, item) => prev + item.amount, 0)),
+      0
+    );
+    let contributions = pledges.reduce(
+      (prev, item) =>
+        prev + item.Contributions.reduce((prev, item) => prev + item.amount, 0),
+      0
+    );
+    let projects = await Project.count({
+      include: [
+        {
+          model: Group,
+          where: {
+            churchId: member.churchId,
+          },
+        },
+      ],
+    });
+    successResponse(res, {
+      church,
+      member,
+      tithings: tithings || 0,
+      unpaidPledges: unpaidPledges || 0,
+      contributions: contributions || 0,
+      projects: projects || 0,
+    });
+  } catch (error) {
+    console.log(error);
+    errorResponse(res, error);
+  }
+};
+
+module.exports = { getMemberStats, getFinanceStats, getSingleMemberStats };

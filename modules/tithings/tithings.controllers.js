@@ -89,6 +89,30 @@ const getMemberTithings = async (req, res) => {
   }
 };
 
+const getSingleMemberTithings = async (req, res) => {
+  try {
+    const member = req.user;
+    const response = await Tithing.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
+      order: [["createdAt", "DESC"]],
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        memberId: member.id,
+      },
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
+
 const getTithing = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -125,6 +149,7 @@ module.exports = {
   addTithing,
   findTithingByUUID,
   getChurchTithings,
+  getSingleMemberTithings,
   getMemberTithings,
   getTithing,
   deleteTithing,

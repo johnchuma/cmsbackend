@@ -7,12 +7,14 @@ const {
   deleteMember,
   getChurchMembers,
   getChurchMemberCount,
+  loginAsMember,
 } = require("./members.controllers");
 const { getPagination } = require("../../utils/getPagination");
 
 const router = Router();
 
-router.post("/", validateJWT, addMember);
+router.post("/", addMember);
+router.post("/auth/login", loginAsMember);
 router.get("/church/:uuid", validateJWT, getPagination, getChurchMembers);
 router.get("/:uuid", validateJWT, getMember);
 router.get("/count/church/:uuid", validateJWT, getChurchMemberCount);

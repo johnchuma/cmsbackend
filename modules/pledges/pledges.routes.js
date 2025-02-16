@@ -8,6 +8,7 @@ const {
   getProjectPledges,
   getProjectPledgesReport,
   getMemberPledges,
+  getSingleMemberPledges,
 } = require("./pledges.controllers");
 const { getPagination } = require("../../utils/getPagination");
 
@@ -15,6 +16,7 @@ const router = Router();
 
 router.post("/", validateJWT, addPledge);
 router.get("/project/:uuid", validateJWT, getPagination, getProjectPledges);
+router.get("/member/", validateJWT, getPagination, getSingleMemberPledges);
 router.get("/member/:uuid", validateJWT, getPagination, getMemberPledges);
 router.get("/report/project/:uuid", validateJWT, getProjectPledgesReport);
 router.get("/:uuid", validateJWT, getPledge);

@@ -7,12 +7,14 @@ const {
   deleteProject,
   getGroupProjects,
   getGroupProjectsReport,
+  getSingleMemberProjects,
 } = require("./projects.controllers");
 const { getPagination } = require("../../utils/getPagination");
 
 const router = Router();
 
 router.post("/", validateJWT, addProject);
+router.get("/member", validateJWT, getPagination, getSingleMemberProjects);
 router.get("/group/:uuid", validateJWT, getPagination, getGroupProjects);
 router.get("/report/group/:uuid", validateJWT, getGroupProjectsReport);
 router.get("/:uuid", getProject);

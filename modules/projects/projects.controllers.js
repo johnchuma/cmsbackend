@@ -87,6 +87,50 @@ const getGroupProjects = async (req, res) => {
     errorResponse(res, error);
   }
 };
+const getSingleMemberProjects = async (req, res) => {
+  try {
+    const member = req.user;
+
+    const response = await Project.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
+      attributes: {
+        include: [
+          [
+            sequelize.literal(
+              `(SELECT COALESCE(SUM(amount), 0) FROM Pledges WHERE projectId = Project.id)`
+            ),
+            "pledges", // Alias for the count of members in each group
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COALESCE(SUM(amount), 0) FROM Contributions WHERE Contributions.pledgeId IN 
+                (SELECT id FROM Pledges WHERE Pledges.projectId = Project.id)
+              )`
+            ),
+            "contributions", // Alias for the total sum of contributions related to the pledges
+          ],
+        ],
+      },
+      include: [
+        {
+          model: Group,
+          where: {
+            churchId: member.churchId,
+          },
+          required: true,
+        },
+      ],
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
 
 const getGroupProjectsReport = async (req, res) => {
   try {
@@ -159,6 +203,7 @@ module.exports = {
   findProjectByUUID,
   getGroupProjects,
   getGroupProjectsReport,
+  getSingleMemberProjects,
   getProject,
   deleteProject,
   updateProject,

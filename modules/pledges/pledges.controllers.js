@@ -74,6 +74,46 @@ const getProjectPledges = async (req, res) => {
     errorResponse(res, error);
   }
 };
+const getSingleMemberPledges = async (req, res) => {
+  try {
+    const member = req.user;
+    const response = await Pledge.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
+      order: [["createdAt", "DESC"]],
+      attributes: {
+        include: [
+          [
+            sequelize.literal(
+              `(SELECT SUM(amount) FROM Contributions WHERE Contributions.pledgeId = Pledge.id)`
+            ),
+            "contributedAmount", // Alias for the total sum of contributions for the pledge
+          ],
+          [
+            sequelize.literal(
+              `Pledge.amount - COALESCE((SELECT SUM(amount) FROM Contributions WHERE Contributions.pledgeId = Pledge.id), 0)`
+            ),
+            "remainingAmount", // Alias for the remaining amount after contributions
+          ],
+        ],
+      },
+      where: {
+        memberId: member.id,
+      },
+      include: [Project], // Including related Project information
+    });
+
+    // Send success response with paginated results
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    // Send error response in case of an error
+    errorResponse(res, error);
+  }
+};
 const getMemberPledges = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -172,6 +212,7 @@ module.exports = {
   getProjectPledges,
   getProjectPledgesReport,
   getMemberPledges,
+  getSingleMemberPledges,
   getPledge,
   deletePledge,
   updatePledge,
