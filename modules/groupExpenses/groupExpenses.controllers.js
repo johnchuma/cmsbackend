@@ -37,21 +37,33 @@ const addGroupExpense = async (req, res) => {
 const getGroupExpenses = async (req, res) => {
   try {
     const { uuid } = req.params;
-
+  const {from,to} = req.query;
     const group = await findGroupByUUID(uuid);
+    let filter = {
+      groupId: group.id,
+    }
+    if(from && to){
+      filter.createdAt = {
+        [Op.between]:[from,to]
+      }
+    }
+    console.log(filter)
     const response = await GroupExpense.findAndCountAll({
       limit: req.limit,
       offset: req.offset,
       attributes: {
         exclude: ["id"],
       },
-      where: {
-        groupId: group.id,
-      },
+      where:filter
     });
+
+    const totalExpenses  = await GroupExpense.sum("amount",{
+      where:filter
+    })
     successResponse(res, {
       page: req.page,
       count: response.count,
+      totalExpenses,
       data: response.rows,
     });
   } catch (error) {

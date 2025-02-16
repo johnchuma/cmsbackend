@@ -37,7 +37,15 @@ const addTithing = async (req, res) => {
 const getChurchTithings = async (req, res) => {
   try {
     const { uuid } = req.params;
-
+    const {from,to} = req.query;
+    let filter = {
+      
+    }
+    if(from && to){
+      filter.createdAt = {
+        [Op.between]:[from,to]
+      }
+    }
     const church = await findChurchByUUID(uuid);
     const response = await Tithing.findAndCountAll({
       limit: req.limit,
@@ -45,16 +53,22 @@ const getChurchTithings = async (req, res) => {
       attributes: {
         exclude: ["id"],
       },
-
+      where:filter,
       include: [
         {
           model: Member,
-          churchId: church.id,
+          where:{
+           churchId: church.id,
+          }
         },
       ],
     });
+    const totalTithings = await Tithing.sum("amount",{
+      where:filter
+    })
     successResponse(res, {
       page: req.page,
+      totalTithings,
       count: response.count,
       data: response.rows,
     });

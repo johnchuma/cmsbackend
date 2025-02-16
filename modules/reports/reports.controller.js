@@ -250,12 +250,16 @@ const getFinanceStats = async (req, res) => {
                     churchId: church.id,
                   },
                   attributes: [],
+                  required:true
                 },
+              
               ],
               attributes: [],
+              required:true
             },
           ],
           attributes: [],
+          required:true
         },
       ],
       where: sequelize.where(
@@ -303,10 +307,12 @@ const getFinanceStats = async (req, res) => {
               where: {
                 churchId: church.id,
               },
-              attributes: [],
+              attributes:[],
+              required:true
             },
           ],
           attributes: [],
+          required:true
         },
       ],
       where: sequelize.where(

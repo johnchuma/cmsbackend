@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Service, Product } = require("../../models");
+const { Service, Product,Church ,Group} = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
@@ -61,7 +61,33 @@ const getGroupServices = async (req, res) => {
     errorResponse(res, error);
   }
 };
-
+const getChurchServices = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const church = await findChurchByUUID(uuid);
+    const response = await Service.findAndCountAll({
+      limit: req.limit,
+      offset: req.offset,
+      attributes: {
+        exclude: ["id"],
+      },
+      include:[{
+        model:Group,
+        where:{
+          churchId:church.id
+        }
+      }],
+      
+    });
+    successResponse(res, {
+      page: req.page,
+      count: response.count,
+      data: response.rows,
+    });
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
 const getService = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -98,6 +124,7 @@ module.exports = {
   addService,
   findServiceByUUID,
   getGroupServices,
+  getChurchServices,
   getService,
   deleteService,
   updateService,

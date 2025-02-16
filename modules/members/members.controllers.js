@@ -3,6 +3,7 @@ const {
   Member,
   User,
   sequelize,
+  Church,
   MemberReport,
   Guest,
   Group,
@@ -26,6 +27,7 @@ const findMemberByUUID = async (uuid) => {
       where: {
         uuid,
       },
+      include:[Church]
     });
     return member;
   } catch (error) {
@@ -204,7 +206,33 @@ const getMember = async (req, res) => {
     errorResponse(res, error);
   }
 };
-
+const findUserByPhone = async (req, res) => {
+  try {
+    const { church_uuid,phone,dob } = req.query;
+    const church = await findChurchByUUID(church_uuid)
+    const member = await Member.findOne({
+      where:{
+        phone,birthDate:dob
+      },
+      include:[{
+        model:Church,
+        where:{
+          id:church.id
+        }
+      }]
+    })
+    if(member){
+      successResponse(res, member);
+    }else{
+      res.status(403).json({
+        status:false,
+        body:"User not found"
+      })
+    }
+  } catch (error) {
+    errorResponse(res, error);
+  }
+};
 const getChurchMemberCount = async (req, res) => {
   try {
     const { uuid } = req.params;
@@ -247,6 +275,7 @@ module.exports = {
   findMemberByUUID,
   getChurchMembers,
   getMember,
+  findUserByPhone,
   deleteMember,
   getChurchMemberCount,
   updateMember,

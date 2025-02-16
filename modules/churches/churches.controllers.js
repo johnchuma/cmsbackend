@@ -36,7 +36,13 @@ const addChurch = async (req, res) => {
 
 const getChurches = async (req, res) => {
   try {
+    const {keyword} = req.query
     const response = await Church.findAll({
+    where:{
+      name:{
+        [Op.like]:`%${keyword}%`
+      }
+    },
       attributes: {
         exclude: ["id"],
       },

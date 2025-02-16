@@ -1,9 +1,10 @@
 const { Op } = require("sequelize");
-const { OfferingRecord, Product } = require("../../models");
+const { OfferingRecord, Product,Member } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
 const { findOfferingByUUID } = require("../offerings/offerings.controllers");
+const { findMemberByUUID } = require("../members/members.controllers");
 
 const findOfferingRecordByUUID = async (uuid) => {
   try {
@@ -21,12 +22,17 @@ const findOfferingRecordByUUID = async (uuid) => {
 
 const addOfferingRecord = async (req, res) => {
   try {
-    const { amount, offering_uuid } = req.body;
+    const { amount, offering_uuid,member_uuid } = req.body;
     const offering = await findOfferingByUUID(offering_uuid);
-    const response = await OfferingRecord.create({
+    let payload  = {
       amount,
       offeringId: offering.id,
-    });
+    }
+    if(member_uuid){
+      const member  = await findMemberByUUID(member_uuid)
+      payload.memberId = member.id;
+    }
+    const response = await OfferingRecord.create(payload);
     successResponse(res, response);
   } catch (error) {
     errorResponse(res, error);
@@ -36,20 +42,32 @@ const addOfferingRecord = async (req, res) => {
 const getOfferingRecords = async (req, res) => {
   try {
     const { uuid } = req.params;
-
+    const {from,to} = req.query;
     const offering = await findOfferingByUUID(uuid);
+    let filter = {
+      offeringId: offering.id,
+    }
+
+    if(from && to){
+      filter.createdAt = {
+        [Op.between]:[from,to]
+      }
+    }
     const response = await OfferingRecord.findAndCountAll({
       limit: req.limit,
       offset: req.offset,
       attributes: {
         exclude: ["id"],
       },
-      where: {
-        offeringId: offering.id,
-      },
+      include:[Member],
+      where: filter,
     });
+    const totalOfferings = await OfferingRecord.sum("amount",{
+      where:filter
+    })
     successResponse(res, {
       page: req.page,
+      totalOfferings,
       count: response.count,
       data: response.rows,
     });
@@ -65,6 +83,7 @@ const getOfferingRecordsReport = async (req, res) => {
     const response = await OfferingRecord.findAll({
       attributes: ["createdAt", "amount"],
       order: [["createdAt"]],
+      include:[Member],
       where: {
         offeringId: offering.id,
       },
