@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { User, Church } = require("../../models");
+const { User,Church, Product,Message,Sequelize,SMSInventory } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { errorResponse, successResponse } = require("../../utils/responses");
 const bcrypt = require("bcrypt");
@@ -10,17 +10,51 @@ const { sendEmail } = require("../../utils/send_email");
 const findUserByUUID = async (uuid) => {
   try {
     const user = await User.findOne({
-      where: {
-        uuid,
-      },
-      include: [Church],
+      where: { uuid },
+      include: [
+        {
+          model: Church,
+          attributes: {
+            exclude: ["UserId"],
+            include: [
+              [
+                Sequelize.literal(`
+                  (
+                    SELECT COALESCE(SUM(si.count), 0) 
+                    FROM SMSInventories AS si 
+                    WHERE si.churchId = Churches.id
+                  ) 
+                  - 
+                  (
+                    SELECT COUNT(*) 
+                    FROM Messages AS m 
+                    LEFT JOIN DeliveryReports AS dr ON m.id = dr.messageId
+                    WHERE m.churchId = Churches.id
+                    AND dr.id IS NOT NULL
+                  )
+                `),
+                'availableSMS'
+              ]
+            ]
+          },
+          include: [
+            { model: SMSInventory, attributes: [] },
+            { model: Message, attributes: [] }
+          ]
+        }
+      ]
     });
+
     return user;
   } catch (error) {
-    console.log(error);
+    console.error("Error finding user by UUID:", error);
     throw error;
   }
 };
+
+
+
+
 
 const addUser = async (req, res) => {
   try {

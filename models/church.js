@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       });
       Church.belongsTo(models.User);
       Church.hasMany(models.PosterRequest);
+      Church.hasMany(models.Message)
+      Church.hasMany(models.SMSInventory)
     }
   }
   Church.init(

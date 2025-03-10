@@ -9,6 +9,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      DeliveryReport.belongsTo(models.Message)
+      DeliveryReport.belongsTo(models.Member)
     }
   }
   DeliveryReport.init(

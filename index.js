@@ -42,9 +42,6 @@ const PosterRequestRoutes = require("./modules/posterRequests/posterRequests.rou
 const PosterRequestAttachmentRoutes = require("./modules/posterRequestAttachment/posterRequestAttachment.routes");
 const MessagesRoutes = require("./modules/messages/messages.routes");
 const { connectTCP } = require("./modules/tcp/tcp.controllers");
-const { initializeApp } = require("firebase/app");
-const { getFirestore, getDocs, collection } = require("firebase/firestore");
-const { successResponse } = require("./utils/responses");
 const app = express();
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

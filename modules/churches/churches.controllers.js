@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Church, Product } = require("../../models");
+const { Church, Product,Message,Sequelize,SMSInventory } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const { findUserByUUID } = require("../users/users.controllers");
 const { errorResponse, successResponse } = require("../../utils/responses");
@@ -7,10 +7,47 @@ const { errorResponse, successResponse } = require("../../utils/responses");
 const findChurchByUUID = async (uuid) => {
   try {
     const church = await Church.findOne({
-      where: {
-        uuid,
+      attributes: {
+        exclude:["UserId"],
+        include: [
+          // Calculate availableSMS as the total number of SMSInventory entries minus the used messages
+          [
+            Sequelize.literal(`
+              (
+                SELECT COALESCE(SUM(si.count), 0) 
+                FROM SMSInventories AS si 
+                WHERE si.churchId = Church.id
+              ) 
+              - 
+              (
+                SELECT COUNT(*) 
+                FROM Messages AS m 
+                LEFT JOIN DeliveryReports AS dr ON m.id = dr.messageId
+                WHERE m.churchId = Church.id
+                AND dr.id IS NOT NULL
+              )
+            `),
+            'availableSMS'
+          ]
+          
+        ]
       },
+      where: {
+        uuid: uuid, // Add your filtering condition
+      },
+      include: [
+        {
+          model: SMSInventory,
+          attributes: [],
+        },
+        {
+          model: Message,
+          attributes: [],
+        },
+      ],
+      raw: true, // Optional: Use raw query to avoid Sequelize aliases automatically
     });
+    
     return church;
   } catch (error) {
     console.log(error);
@@ -40,7 +77,7 @@ const getChurches = async (req, res) => {
     const response = await Church.findAll({
     where:{
       name:{
-        [Op.like]:`%${keyword}%`
+        [Op.like]:`%${keyword??""}%`
       }
     },
       attributes: {

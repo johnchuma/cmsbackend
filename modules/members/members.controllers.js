@@ -150,8 +150,8 @@ const getChurchMembers = async (req, res) => {
         case "Married":
           filter.maritalStatus = "Married";
           break;
-        case "Not Married":
-          filter.maritalStatus = "Not Married";
+        case "Not married":
+          filter.maritalStatus = "Not married";
           break;
         case "Active":
           filter.isActive = true;

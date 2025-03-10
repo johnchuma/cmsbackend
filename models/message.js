@@ -8,8 +8,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      Message.belongsTo(models.Church)
       // define association here
     }
+
   }
   Message.init(
     {

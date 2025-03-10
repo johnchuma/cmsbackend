@@ -14,7 +14,7 @@ const { getPagination } = require("../../utils/getPagination");
 const router = Router();
 
 router.post("/",  addMember);
-router.get("/church/:uuid", validateJWT, getPagination, getChurchMembers);
+router.get("/church/:uuid", getPagination, getChurchMembers);
 router.get("/by-phone",  findUserByPhone);
 router.get("/:uuid",  getMember);
 router.get("/count/church/:uuid", validateJWT, getChurchMemberCount);

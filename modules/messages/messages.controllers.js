@@ -26,19 +26,46 @@ const buySMS = async (req, res) => {
     errorResponse(res, error);
   }
 };
+const sendMessage = async ({member,church,sms}) => {
+      const number = addPrefixToPhoneNumber(member.phone);
+      console.log(number)
+      const message = await Message.create({
+        message:sms,
+        churchId:church.id,
+        to:number
+      })
+      await sendSMS(number,sms);
+    const report =  await DeliveryReport.create({
+        isSent:true,
+        report:"sent",
+        messageId:true,
+        memberId:message.id
+       })
+  return report
+};
 const sendMessages = async (req, res) => {
   try {
     const { recepients, message, church_uuid } = req.body;
-    const promises = recepients.map(async (item) => {
-      const number = addPrefixToPhoneNumber(item.phone);
-      return await sendSMS(number, message);
-    });
-    const response = await Promise.all(promises);
-    successResponse(res, response);
+    const church = await findChurchByUUID(church_uuid);
+    let availableSMS = church.availableSMS; // Ensure this is a number
+
+    const responses = [];
+    for (const item of recepients) {
+      if (availableSMS > 0) {
+        availableSMS--; // Decrease availableSMS before sending
+        const response = await sendMessage({ member: item, church, sms: message });
+        responses.push(response);
+      } else {
+        break; // Stop sending if no SMS left
+      }
+    }
+
+    successResponse(res, responses);
   } catch (error) {
     errorResponse(res, error);
   }
 };
+
 const sendMessagesToGroup = async (req, res) => {
   try {
     const { message } = req.body;
@@ -94,4 +121,4 @@ const sendMessagesToGroup = async (req, res) => {
   }
 };
 
-module.exports = { sendMessagesToGroup, buySMS, sendMessages };
+module.exports = { sendMessagesToGroup,sendMessage, buySMS, sendMessages };
