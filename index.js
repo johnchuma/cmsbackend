@@ -47,7 +47,7 @@ const app = express();
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.static("/files"));
 app.use(express.json());
-app.use(cors());
+app.use(cors(["https://www.hemani.io"]));
 app.use(bodyParser.text({ type: "text/plain" }));
 
 app.use("/churches", ChurchesRoutes);
